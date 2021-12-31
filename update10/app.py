@@ -819,6 +819,7 @@ class SignupForm(FlaskForm):
 
 
 @app.route('/signup', methods=['POST','GET'])
+@login_required
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
