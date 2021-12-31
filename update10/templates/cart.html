@@ -1,0 +1,671 @@
+{% extends "base.html" %}
+
+
+
+{% block body %}
+
+{% if viewproduct %}
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+			<li>
+				<a href="{{ url_for('index') }}">Home</a>
+			</li>
+			<li class="active">View Product</li>
+		</ol>
+	</div>
+</div>
+</div>
+	<div class="container">
+		<div class="panel panel-primary">
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+							<div class="thumbnail thumbnail-q">
+								<img src="{{ product.image}}" alt="" style="max-width:100%;height: 300px;">
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<h3 class="bold">{{ product.name }} </h3>
+						<p class="bold">{{ product.price }}</p>
+						<p class="bold">Product Brand : {{ product.brand.name }}</p>
+						<p class="bold">Product Category : {{ product.category.name }}</p>
+						<p><i class="bold">All about the Item :<br/><div><b>{{ product.description }}</b></div></i></p>
+						<br />
+
+					
+					<div class="col-lg-6">
+						<form action="{{ url_for('add_to_cart') }}" method="POST">
+				{% if product.stock > 0 %}
+						<div>
+							<div>
+								<h3>Quantity</h3>
+							</div>
+							<div >
+								<span>{{ form.csrf_token }}
+
+								{{ form.quantity(class='form-control', type='number', min=1, max=product.stock, step=1, value=1) }}
+
+								{{ form.id(value=product.id) }}</span>
+							</div>
+					
+						</div>
+					</div>
+				</div>
+				{% endif %}
+			</div>
+			<div class="col-lg-4">
+			<div class="panel-footer">
+				{% if product.stock > 0 %}
+				<button type="submit" class="btn btn-primary">
+					<i class="glyphicon glyphicon-shopping-cart"></i> Add To Cart
+				</button>
+				{% endif %}
+			</div>
+		</div>
+			</form>
+		</div>
+					</div>
+				
+				</div>
+				
+			</div>
+		</div>
+	</div>
+
+
+
+
+
+
+
+
+
+<div class="container">
+<div class="panel panel-primary">
+			<div class="panel-body">
+				<div class="row">
+		<div role="tabpanel">
+			<!-- Nav tabs -->
+			<ul class="nav nav-tabs" role="tablist">
+				<li role="presentation" class="active">
+					<a href="#description" aria-controls="description" role="tab" data-toggle="tab">Product Description</a>
+				</li>
+				<li role="presentation">
+					<a href="#Delivery" aria-controls="Delivery" role="tab" data-toggle="tab">Transportation Details</a>
+				</li>
+			</ul>
+		
+			<!-- Tab panes -->
+			<div class="tab-content">
+				<div role="tabpanel" class="tab-pane active" id="description">
+					<h3>Product Description</h3>
+					{{ product.description }}
+				</div>
+				<div role="tabpanel" class="tab-pane" id="Delivery">
+					<h3>Transportation Details</h3>
+					<p>We deliver your Oredr At a placeof your Choice</p>
+					<p>At a Transport fee of <b>3000/= Only</b></p>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+
+{% endif %}
+{% if index %}
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>Check Out This Different Categories In Our Stock</p>
+		</ol>
+	</div>
+</div>
+
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>
+        				{% for category in categories %}               
+                            <a href="{{ url_for('gt_category', id=category.id) }}" class="btn btn-primary my-2 my-sm-0"><i class="glyphicon glyphicon-chevron-left"></i> {{ category.name }} </a>
+                        {% endfor %}
+</p>
+		</ol>
+	</div>
+</div>
+
+<div class="container" style="margin-top: 40px !important;">
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<h4 class="text-center pageTitle">Available Products</h4>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="row">
+	{% for product in products.items %}
+	<div class="col-md-2 col-xs-6">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div class="pro-thumbnail">
+				<a href="{{ url_for('product', id=product.id) }}">
+					<img src="{{ product.image }}" alt="" style="max-width:100%;height: 150px;">
+				</a>
+				<div class="caption text-center">
+					<h4 class="bold">{{ product.name }}</h4>
+					<p>
+						{{ product.category.name }}
+
+					</p>
+					<p>{{ product.brand.name }}</p>
+					<hr />
+					<p>
+						<a href="{{ url_for('product', id=product.id) }}" class="btn btn-primary btn-sm">
+							<i class="glyphicon glyphicon-eye-open"></i> View
+						</a>
+						{% if product.stock > 0 %}
+						<a href="{{ url_for('quick_add', id=product.id) }}" class="btn btn-default btn-sm">
+							<i class="glyphicon glyphicon-shopping-cart"></i> Add To Cart
+						</a>
+						{% endif %}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+		{% endfor %}
+</div>
+<div class="container">
+<div class="row">
+	<div class="col-lg-12 text-center">
+		<ol class="breadcrumb">
+			<p>{% if products.has_prev %}
+			<a href="{{url_for('index',page=page_num) }}" class="btn btn-primary btn-outline-info btn-sm mt-3">Previous</a>
+			{% endif %}
+		{% for page_num in products.iter_pages()%}
+			{% if page_num %}
+			{% if products.page == page_num %}			<a href="{{url_for('index', page=page_num)}}" class="btn btn-primary btn-outline-info btn-sm mt-3">{{ page_num }}</a>
+			{% else %}
+			<a href="{{url_for('index', page=page_num)}}" class="btn btn-primary btn-outline-info btn-sm mt-3">{{ page_num }}</a>
+			{% endif %}
+			{% else %}
+			...
+			{% endif %}
+			{% endfor %}
+			{% if products.has_next %}
+			<a href="{{url_for('index', page=products.next_num)}}" class="btn btn-primary btn-outline-info btn-sm mt-3">Next</a>
+			{% endif %}
+		</p>
+			
+		</ol>
+	</div>
+</div>
+
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>Check out our Brands In Stock</p>
+		</ol>
+	</div>
+</div>
+
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>
+        				{% for brand in brands %}               
+                            <a href="{{ url_for('gt_brand', id=brand.id) }}" class="btn btn-primary my-2 my-sm-0"><i class="glyphicon glyphicon-chevron-left"></i> {{ brand.name }} </a>
+                        {% endfor %}
+</p>
+		</ol>
+	</div>
+</div>
+</div>
+
+
+
+</div>
+
+<div class="row pad">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-body text-center">
+				<p>At <strong><em>PEARLMART STORES</em></strong>, we offer 24 hours service.</p> 
+				<p>We offer 1 day Product changing gurantee and we take buyer protection seriously.</p> 
+				<p>All our products are of the highest grade.</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endif %}
+{% if cat %}
+
+
+<div class="container" style="margin-top: 40px !important;">
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<h4 class="text-center pageTitle">Available Products cat</h4>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="row">
+	{% for product in products %}
+	<div class="col-md-2 col-xs-6">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div class="thumbnail">
+				<a href="{{ url_for('product', id=product.id) }}">
+					<img src="{{ product.image }}" alt="" style="max-width:100%;height: 150px;">
+				</a>
+				<div class="caption text-center">
+					<h4 class="bold">{{ product.name }}</h4>
+					<p>
+						{{ product.category.name }}
+
+					</p>
+					<p>{{ product.brand.name }}</p>
+					<hr />
+					<p>
+						<a href="{{ url_for('product', id=product.id) }}" class="btn btn-primary btn-sm">
+							<i class="glyphicon glyphicon-eye-open"></i> View
+						</a>
+						{% if product.stock > 0 %}
+						<a href="{{ url_for('quick_add', id=product.id) }}" class="btn btn-default btn-sm">
+							<i class="glyphicon glyphicon-shopping-cart"></i> Add To Cart
+						</a>
+						{% endif %}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+
+<div class="row pad">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-body text-center">
+				<p>At <strong><em>PEARLMART STORES</em></strong>, we offer 24 hours service.</p> 
+				<p>We offer 1 day Product changing gurantee and we take buyer protection seriously.</p> 
+				<p>All our products are of the highest grade.</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endif %}
+{% if checkout %}
+
+<div class="row">
+	<div class="col-lg-8">
+		<h3 class="bold">
+			<i class="glyphicon glyphicon-pencil"></i> Delivery Information
+		</h3>
+
+		<div class="panel panel-primary">
+			<form method="POST" action="{{ url_for('checkout') }}">
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-lg-12">
+						<h4 class="bold">Personal Information</h4>
+					</div>
+					{{ form.csrf_token }}
+					<div class="col-lg-6">
+						<div class="form-group">
+							<label>Name(So as to identify you When making Deliveries)</label>
+							{{ form.name(class='form-control') }}
+						</div>
+					
+					</div>
+					<div class="col-lg-6">
+						<div class="form-group">
+							<label>Phone Number(We will call it to make deliveries)</label>
+							{{ form.phone_number(class='form-control') }}
+						</div>
+						<div class="form-group">
+							<label>Email</label>
+							{{ form.email(class='form-control') }}
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-12">
+						<h4 class="bold">Address(Point for delivery)</h4>
+					</div>
+					<div class="col-lg-6">
+						<div class="form-group">
+							<label>Address</label>
+							{{ form.address(class='form-control') }}
+						</div>
+						
+					</div>
+					
+				</div>
+
+				
+			</div>
+
+			<div class="panel-footer">
+				<button type="submit" class="btn btn-primary btn-sm">
+					Submit My Order
+				</button>
+			</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="col-lg-4">
+		<h3 class="bold">
+			<i class="glyphicon glyphicon-th-list"></i> Cart Details
+		</h3>
+
+		<div class="panel panel-primary">
+			<div class="panel-body">
+				Current Cart Value
+			</div>
+			<ul class="list-group">
+				<li class="list-group-item">
+					<p>
+						{{ quantity_total }} Items <strong class="pull-right">  {{ grand_total }}/=</strong>
+					</p>
+					<p>
+						24hr Delivery <strong class="pull-right">3000/=</strong>
+					</p>
+				</li>
+				<li class="list-group-item">
+					<p>Total <strong class="pull-right">  {{ grand_total_plus_shipping }}/=</strong></p>
+				</li>
+			</ul>
+		</div>
+
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="panel-title">Benefits</h3>
+			</div>
+			<div class="panel-body">
+				Some of the benefits of shopping with us include:
+			</div>
+			<ul class="list-group">
+				<li class="list-group-item">Buyer Protection</li>
+				<li class="list-group-item">Next Day Delivery</li>
+				<li class="list-group-item">Flexible Payment Options</li>
+				<li class="list-group-item">7day Money Back Guarantee</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>Check Our Categories</p>
+		</ol>
+	</div>
+</div>
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>
+        				{% for category in categories %}               
+                            <a href="{{ url_for('gt_category', id=category.id) }}" class="btn btn-primary my-2 my-sm-0"><i class="glyphicon glyphicon-chevron-left"></i> {{ category.name }} </a>
+                        {% endfor %}
+</p>
+		</ol>
+	</div>
+</div>
+</div>
+</div>
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>Check Our Brands</p>
+		</ol>
+	</div>
+</div>
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>
+        				{% for brand in brands %}               
+                            <a href="{{ url_for('gt_brand', id=brand.id) }}" class="btn btn-primary my-2 my-sm-0"><i class="glyphicon glyphicon-chevron-left"></i> {{ brand.name }} </a>
+                        {% endfor %}
+</p>
+		</ol>
+	</div>
+</div>
+</div>
+</div>
+</div>
+{% endif %}
+
+{% if cart %}
+
+
+<div class="row">
+	<div class="col-lg-8">
+		<h3 class="bold">
+			<i class="glyphicon glyphicon-shopping-cart"></i> Your Shopping Cart
+		</h3>
+		
+		<div class="panel panel-primary">
+			<div class="panel-body">
+				{% for product in products %}
+				<div class="row">
+					<div class="col-lg-4">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+							<div class="thumbnail thumbnail-q">
+								<img src="{{ product['image'] }}" alt="">
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<h3 class="bold">{{ product['name'] }}</h3>
+						<p> {{ product['price'] }}/=</p>
+						<br />
+						<p>
+							<a href="{{ url_for('remove_from_cart', index=product['index']) }}">
+							<button type="button" class="btn btn-danger btn-xs">		
+								<i class="glyphicon glyphicon-trash"></i>
+							</button></a>
+						</p>
+					</div>
+					<div class="col-lg-2">
+						<h3>Quantity</h3>
+						<p>
+							{{ product['quantity'] }}
+						</p>
+					</div>
+					<div class="col-lg-2">
+						<h3>Total</h3>
+						<p>
+							<strong> {{ product['total']  }}/=</strong>
+						</p>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+
+	<div class="col-lg-4">
+		<h3 class="bold">
+			<i class="glyphicon glyphicon-th-list"></i> Cart Summary
+		</h3>
+
+		<div class="panel panel-primary">
+			<div class="panel-body">
+				Current Cart Value
+			</div>
+			<ul class="list-group">
+				<li class="list-group-item">
+					<p>
+						{{ quantity_total }} Items <strong class="pull-right"> {{ grand_total  }}/=</strong>
+					</p>
+					<p>
+						24hr Delivery <strong class="pull-right"> 3000/=</strong>
+					</p>
+				</li>
+				<li class="list-group-item">
+					<p>Total <strong class="pull-right"> {{ grand_total_plus_shipping }}/=</strong></p>
+				</li>
+			</ul>
+			<div class="panel-footer">
+				<a href="{{ url_for('checkout') }}" class="btn btn-primary btn-sm">
+					Checkout <i class="glyphicon glyphicon-chevron-right"></i>
+				</a>
+				<a href="{{ url_for('index') }}" class="btn btn-link btn-sm pull-right">
+					<i class="glyphicon glyphicon-chevron-left"></i> Continue Shopping
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>Check Our Categories</p>
+		</ol>
+	</div>
+</div>
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>
+        				{% for category in categories %}               
+                            <a href="{{ url_for('gt_category', id=category.id) }}" class="btn btn-primary my-2 my-sm-0"><i class="glyphicon glyphicon-chevron-left"></i> {{ category.name }} </a>
+                        {% endfor %}
+</p>
+		</ol>
+	</div>
+</div>
+</div>
+</div>
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>Check Our Brands</p>
+		</ol>
+	</div>
+</div>
+<div class="container">
+<div class="row">
+	<div class="col-lg-12">
+		<ol class="breadcrumb">
+<p>
+        				{% for brand in brands %}               
+                            <a href="{{ url_for('gt_brand', id=brand.id) }}" class="btn btn-primary my-2 my-sm-0"><i class="glyphicon glyphicon-chevron-left"></i> {{ brand.name }} </a>
+                        {% endfor %}
+</p>
+		</ol>
+	</div>
+</div>
+</div>
+</div>
+</div>
+{% elif login %}
+<div class="row pad">
+	<div class="col-lg-12">
+		<h2 class="bold text-center">Login To Access The System(Only Employes Of Pearl-Mart Are Registered Here)</h2>
+	</div>
+</div>
+{% with messages = get_flashed_messages() %}
+        {% if messages %}
+<div class="notification is-danger">
+        {{ messages[0] }} 
+</div>
+
+        {% endif %}
+
+
+        {% endwith %}
+
+<div class="row">
+	<div class="col-lg-10 col-lg-offset-1">
+		<div class="panel panel-default">
+			<form method="POST" action="{{ url_for('login') }}" enctype="multipart/form-data">
+				<div class="panel-body">
+					<div class="row">
+						{{ form.csrf_token }}
+						<div class="col-lg-6">
+							
+
+							<div class="form-group">
+								<label>Email</label>
+								{{ form.email(class='form-control') }}
+							</div>
+							<div class="form-group">
+								<label>Password</label>
+								{{ form.password(class='form-control') }}
+							</div>
+							<div class="form-group">
+								<p>{{ form.remember_me(class='form-control') }} <b>Remember me</b></p>
+								
+							</div>
+							
+						</div>
+					</div>
+				</div>
+
+				<div class="panel-footer">
+					{{ form.submit(class='form-control') }}
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+
+</div>
+{% endif %}
+{% if error %}
+<div class="row">
+   <div class="col-lg-12"> 
+    <div class="container">
+            <div class="thumbnail">
+
+                    <img src="{{ url_for('static', filename='imgs/404.jpg') }}" style="width: 100%;">
+                    <div class="carousel-caption">
+                            <a href=""><h1>404 error page</h1></a>
+                            <p>Oops wrong page,The page you requested is either not there or we must have an error on our side please bear with us. we will get it fixed wright a way.</p><p class="btn btn-primary my-2 my-sm-0">Back To STORE<a href="{{ url_for('index') }}" class="btn btn-primary my-2 my-sm-0 glyphicon glyphicon-chevron-right"></a>
+</p>
+                    </div>
+                
+                
+        </div>
+                
+    </div>
+                
+</div> 
+{% endif %}
+{% endblock %}
